@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Distrato com Confissão de Dívida – Projetar Imóveis</title>
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800&family=Lora:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet" />
+  <style>
+    :root{--vinho:#A0496A;--vinho-dark:#7a3250;--vinho-light:#c4768f;--vinho-pale:#f9eef2;--gold:#c9a96e;--text:#1e1e1e;--text-muted:#6b6b6b;--border:#ddd0d5;--bg:#faf8f8;--white:#ffffff;--radius:10px;--shadow:0 2px 16px rgba(160,73,106,0.10);}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:'Montserrat',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;padding:40px 16px 60px;}
+    .wrapper{max-width:720px;margin:0 auto;}
+    .header{background:var(--vinho);border-radius:var(--radius) var(--radius) 0 0;padding:32px 36px 24px;display:flex;align-items:center;gap:20px;position:relative;overflow:hidden;}
+    .header::after{content:'';position:absolute;right:-30px;top:-30px;width:160px;height:160px;border-radius:50%;background:rgba(255,255,255,0.06);}
+    .logo-name{font-weight:800;font-size:22px;color:#fff;letter-spacing:0.5px;line-height:1;}
+    .logo-name span{color:var(--gold);}
+    .logo-sub{font-family:'Lora',serif;font-style:italic;font-size:11px;color:rgba(255,255,255,0.7);margin-top:4px;letter-spacing:1px;}
+    .header-title{margin-left:auto;text-align:right;}
+    .header-title h1{font-size:15px;font-weight:700;color:#fff;letter-spacing:1.5px;text-transform:uppercase;}
+    .header-title p{font-size:11px;color:rgba(255,255,255,0.65);margin-top:4px;font-family:'Lora',serif;font-style:italic;}
+    .accent-bar{height:4px;background:linear-gradient(90deg,var(--gold),var(--vinho-light));}
+    .card{background:var(--white);border-radius:0 0 var(--radius) var(--radius);box-shadow:var(--shadow);padding:36px 36px 40px;}
+    .section{margin-bottom:32px;}
+    .section-title{font-size:10px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--vinho);margin-bottom:16px;display:flex;align-items:center;gap:10px;}
+    .section-title::after{content:'';flex:1;height:1px;background:var(--border);}
+    .grid-2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+    .field{display:flex;flex-direction:column;gap:6px;}
+    label{font-size:11px;font-weight:600;color:var(--text-muted);letter-spacing:0.5px;text-transform:uppercase;}
+    input[type="text"],input[type="date"]{border:1.5px solid var(--border);border-radius:7px;padding:10px 13px;font-family:'Montserrat',sans-serif;font-size:13.5px;color:var(--text);background:var(--white);transition:border-color .2s,box-shadow .2s;outline:none;width:100%;}
+    input:focus{border-color:var(--vinho);box-shadow:0 0 0 3px rgba(160,73,106,0.12);}
+    input.erro{border-color:#c0392b;box-shadow:0 0 0 3px rgba(192,57,43,0.10);}
+    .prefix-input{display:flex;align-items:center;}
+    .prefix{padding:10px 13px;background:var(--vinho-pale);border:1.5px solid var(--border);border-right:none;border-radius:7px 0 0 7px;font-size:13.5px;font-weight:600;color:var(--vinho);white-space:nowrap;}
+    .prefix-input input{border-radius:0 7px 7px 0;}
+    .hint{font-family:'Lora',serif;font-style:italic;font-size:11.5px;color:var(--text-muted);margin-top:2px;}
+    .resumo{margin-top:16px;padding:14px 18px;background:var(--vinho-pale);border:1.5px solid var(--border);border-radius:var(--radius);font-size:12.5px;color:var(--vinho-dark);line-height:1.6;display:none;}
+    .resumo.visible{display:block;}
+    .resumo strong{font-weight:700;}
+    .resumo.alerta{background:#fff4e5;border-color:#f0c48a;color:#8a5300;}
+    .radio-group{display:flex;gap:12px;flex-wrap:wrap;margin-top:2px;}
+    .radio-label{display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text);text-transform:none;letter-spacing:0;padding:8px 16px;border:1.5px solid var(--border);border-radius:50px;transition:all .2s;user-select:none;}
+    .radio-label:hover{border-color:var(--vinho-light);background:var(--vinho-pale);}
+    .radio-label input{display:none;}
+    .radio-label.selected{border-color:var(--vinho);background:var(--vinho-pale);color:var(--vinho-dark);}
+    .radio-dot{width:10px;height:10px;border-radius:50%;border:2px solid var(--border);background:#fff;flex-shrink:0;transition:all .2s;}
+    .radio-label.selected .radio-dot{background:var(--vinho);border-color:var(--vinho);}
+    .dynamic-block{display:none;margin-top:16px;padding:20px;background:var(--vinho-pale);border:1.5px solid var(--border);border-radius:var(--radius);animation:fadeIn .2s ease;}
+    .dynamic-block.visible{display:block;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(-6px);}to{opacity:1;transform:translateY(0);}}
+    .pessoa-item{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:end;margin-bottom:12px;}
+    .pessoa-item:last-child{margin-bottom:0;}
+    .btn-add{display:inline-flex;align-items:center;gap:7px;margin-top:14px;padding:8px 18px;border-radius:50px;border:1.5px dashed var(--vinho-light);background:transparent;font-family:'Montserrat',sans-serif;font-size:12px;font-weight:600;color:var(--vinho);cursor:pointer;transition:all .2s;}
+    .btn-add:hover{background:var(--vinho-pale);border-color:var(--vinho);}
+    .btn-remove{padding:9px 13px;border-radius:7px;border:1.5px solid #e8c4ce;background:#fff0f4;color:var(--vinho);font-size:14px;cursor:pointer;transition:all .2s;line-height:1;}
+    .btn-remove:hover{background:#ffd6e0;border-color:var(--vinho);}
+    .actions{display:flex;justify-content:flex-end;gap:12px;margin-top:36px;padding-top:24px;border-top:1px solid var(--border);}
+    .btn-secondary{padding:12px 26px;border-radius:7px;border:1.5px solid var(--border);background:transparent;font-family:'Montserrat',sans-serif;font-size:13px;font-weight:600;color:var(--text-muted);cursor:pointer;transition:all .2s;}
+    .btn-secondary:hover{border-color:var(--vinho);color:var(--vinho);}
+    .btn-primary{padding:12px 32px;border-radius:7px;border:none;background:var(--vinho);font-family:'Montserrat',sans-serif;font-size:13px;font-weight:700;color:#fff;cursor:pointer;letter-spacing:0.5px;transition:background .2s,transform .15s;}
+    .btn-primary:hover{background:var(--vinho-dark);transform:translateY(-1px);}
+    .btn-primary:disabled{opacity:.6;cursor:wait;transform:none;}
+    .footer{text-align:center;margin-top:24px;font-size:11px;color:var(--text-muted);font-family:'Lora',serif;font-style:italic;}
+    .toast{display:none;position:fixed;bottom:32px;right:32px;background:#2e7d52;color:#fff;padding:14px 24px;border-radius:10px;font-size:14px;font-weight:600;box-shadow:0 4px 20px rgba(0,0,0,0.2);z-index:999;}
+    .toast.erro{background:#c0392b;}
+    @media(max-width:560px){.card{padding:24px 18px 32px;}.header{padding:24px 20px;flex-direction:column;align-items:flex-start;gap:12px;}.header-title{margin-left:0;text-align:left;}.grid-2{grid-template-columns:1fr;}.actions{flex-wrap:wrap;}.toast{left:16px;right:16px;bottom:16px;}}
+    @media print{body{padding:0;background:#fff;}.actions,.btn-add,.btn-remove,.toast{display:none!important;}.card{box-shadow:none;}}
+  </style>
+</head>
+<body>
+<div class="wrapper">
+  <div class="header">
+    <div>
+      <div class="logo-name">PROJETAR <span>IMÓVEIS</span></div>
+      <div class="logo-sub">CRECI 2709J</div>
+    </div>
+    <div class="header-title">
+      <h1>Distrato com Confissão de Dívida</h1>
+      <p>Controle interno – Uso exclusivo da equipe</p>
+    </div>
+  </div>
+  <div class="accent-bar"></div>
+  <div class="card">
+    <form id="fichaForm" novalidate>
+
+      <!-- DADOS DO CONTRATO -->
+      <div class="section">
+        <div class="section-title">Dados do Contrato</div>
+        <div class="field">
+          <label>Código do Inquilino</label>
+          <input type="text" name="codigo_inquilino" inputmode="numeric" placeholder="Código do inquilino no Imoview" />
+          <span class="hint">Locador, imóvel, datas e prazo do contrato são buscados automaticamente no Imoview.</span>
+        </div>
+      </div>
+
+      <!-- ACORDO DE DÉBITOS -->
+      <div class="section">
+        <div class="section-title">Acordo de Débitos</div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Valor Total do Acordo</label>
+            <div class="prefix-input">
+              <span class="prefix">R$</span>
+              <input type="text" name="valor_acordo" inputmode="decimal" placeholder="0,00" class="moeda" />
+            </div>
+            <span class="hint">Aluguéis, condomínio, multa e juros.</span>
+          </div>
+          <div class="field">
+            <label>Valor da Entrada</label>
+            <div class="prefix-input">
+              <span class="prefix">R$</span>
+              <input type="text" name="valor_entrada" inputmode="decimal" placeholder="0,00" class="moeda" />
+            </div>
+          </div>
+          <div class="field">
+            <label>Data da Entrada</label>
+            <input type="date" name="data_entrada" />
+          </div>
+          <div class="field">
+            <label>Quantidade de Parcelas</label>
+            <input type="text" name="qtd_parcelas" inputmode="numeric" placeholder="Ex.: 6" />
+          </div>
+          <div class="field">
+            <label>Valor de Cada Parcela</label>
+            <div class="prefix-input">
+              <span class="prefix">R$</span>
+              <input type="text" name="valor_parcela" inputmode="decimal" placeholder="Calculado automaticamente" class="moeda" />
+            </div>
+            <span class="hint">Preenchido pelo cálculo (total − entrada) ÷ parcelas. Pode ajustar.</span>
+          </div>
+          <div class="field">
+            <label>Vencimento da 1ª Parcela</label>
+            <input type="date" name="data_primeira_parcela" />
+            <span class="hint">As demais vencem no mesmo dia dos meses seguintes.</span>
+          </div>
+        </div>
+        <div class="resumo" id="resumoAcordo"></div>
+      </div>
+
+      <!-- LOCATÁRIOS SOLIDÁRIOS -->
+      <div class="section">
+        <div class="section-title">Locatários Solidários</div>
+        <div class="field">
+          <label>Há locatários solidários?</label>
+          <div class="radio-group" data-name="tem_solidario" id="grupoSolidario">
+            <label class="radio-label"><input type="radio" name="tem_solidario" value="Sim" /><span class="radio-dot"></span> Sim</label>
+            <label class="radio-label"><input type="radio" name="tem_solidario" value="Não" /><span class="radio-dot"></span> Não</label>
+          </div>
+        </div>
+        <div class="dynamic-block" id="blocoSolidario">
+          <div id="listaSolidarios">
+            <div class="pessoa-item" id="solidario-1">
+              <div class="field">
+                <label>Código do Solidário 1</label>
+                <input type="text" name="codigo_solidario[]" placeholder="Código do locatário solidário" />
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn-add" onclick="adicionarItem('listaSolidarios','solidario','codigo_solidario[]','Solidário')">+ Adicionar solidário</button>
+        </div>
+      </div>
+
+      <!-- FIADORES -->
+      <div class="section">
+        <div class="section-title">Fiadores</div>
+        <div class="field">
+          <label>A garantia do contrato é fiador?</label>
+          <div class="radio-group" data-name="tem_fiador" id="grupoFiador">
+            <label class="radio-label"><input type="radio" name="tem_fiador" value="Sim" /><span class="radio-dot"></span> Sim</label>
+            <label class="radio-label"><input type="radio" name="tem_fiador" value="Não" /><span class="radio-dot"></span> Não</label>
+          </div>
+          <span class="hint">Se o contrato for com fiador, informe ao menos um código — sem ele o distrato não é gerado.</span>
+        </div>
+        <div class="dynamic-block" id="blocoFiador">
+          <div id="listaFiadores">
+            <div class="pessoa-item" id="fiador-1">
+              <div class="field">
+                <label>Código do Fiador 1</label>
+                <input type="text" name="codigo_fiador[]" placeholder="Código do fiador" />
+              </div>
+            </div>
+          </div>
+          <button type="button" class="btn-add" onclick="adicionarItem('listaFiadores','fiador','codigo_fiador[]','Fiador')">+ Adicionar fiador</button>
+        </div>
+      </div>
+
+      <!-- AÇÕES -->
+      <div class="actions">
+        <button type="button" class="btn-secondary" onclick="limparForm()">Limpar</button>
+        <button type="button" class="btn-secondary" onclick="window.print()">🖨 Imprimir</button>
+        <button type="submit" class="btn-primary" id="btnEnviar">Enviar Distrato</button>
+      </div>
+
+    </form>
+  </div>
+  <div class="footer">Projetar Imóveis · CRECI 2709J · Av. Cel. João Fernandes, 546 – Urussanguinha – Araranguá/SC</div>
+</div>
+
+<div class="toast" id="toast">✓ Distrato enviado com sucesso!</div>
+
+<script>
+  const WEBHOOK = 'https://dinastia-n8n-webhook.saxddq.easypanel.host/webhook/4eb422da-1c83-41fd-a971-b0ad71d9e0ed';
+  const contadores = {};
+  const form = document.getElementById('fichaForm');
+  const campo = nome => form.querySelector(`[name="${nome}"]`);
+
+  // ---- Rádios Sim/Não + blocos dinâmicos ----
+  document.querySelectorAll('.radio-group').forEach(group => {
+    group.querySelectorAll('.radio-label').forEach(label => {
+      label.addEventListener('click', () => {
+        const groupName = group.dataset.name;
+        document.querySelectorAll(`[data-name="${groupName}"] .radio-label`).forEach(l => l.classList.remove('selected'));
+        label.classList.add('selected');
+        label.querySelector('input').checked = true;
+        const val = label.querySelector('input').value;
+        if (groupName === 'tem_solidario') document.getElementById('blocoSolidario').classList.toggle('visible', val === 'Sim');
+        if (groupName === 'tem_fiador') document.getElementById('blocoFiador').classList.toggle('visible', val === 'Sim');
+      });
+    });
+  });
+
+  function adicionarItem(listaId, prefixo, fieldName, label) {
+    if (!contadores[prefixo]) contadores[prefixo] = 1;
+    contadores[prefixo]++;
+    const n = contadores[prefixo];
+    const lista = document.getElementById(listaId);
+    const div = document.createElement('div');
+    div.className = 'pessoa-item';
+    div.id = `${prefixo}-${n}`;
+    div.innerHTML = `
+      <div class="field">
+        <label>Código do ${label} ${n}</label>
+        <input type="text" name="${fieldName}" placeholder="Código do ${label.toLowerCase()}" />
+      </div>
+      <button type="button" class="btn-remove" onclick="removerItem('${prefixo}-${n}')" title="Remover">✕</button>
+    `;
+    lista.appendChild(div);
+    div.querySelector('input').focus();
+  }
+
+  function removerItem(id) {
+    const el = document.getElementById(id);
+    if (el) el.remove();
+  }
+
+  // ---- Valores em reais ----
+  function lerMoeda(v) {
+    const s = String(v || '').replace(/[^\d,.-]/g, '');
+    if (!s) return 0;
+    if (s.includes(',')) return parseFloat(s.replace(/\./g, '').replace(',', '.')) || 0;
+    return parseFloat(s) || 0;
+  }
+  function formatarMoeda(n) {
+    return Number(n || 0).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+  function dataBR(iso) {
+    return iso ? iso.split('-').reverse().join('/') : '—';
+  }
+
+  let parcelaEditadaManualmente = false;
+
+  document.querySelectorAll('input.moeda').forEach(input => {
+    input.addEventListener('blur', () => {
+      if (input.value.trim() !== '') input.value = formatarMoeda(lerMoeda(input.value));
+      atualizarAcordo();
+    });
+  });
+  campo('valor_parcela').addEventListener('input', () => { parcelaEditadaManualmente = campo('valor_parcela').value.trim() !== ''; });
+  ['valor_acordo', 'valor_entrada', 'qtd_parcelas', 'data_entrada', 'data_primeira_parcela'].forEach(nome => {
+    campo(nome).addEventListener('input', atualizarAcordo);
+    campo(nome).addEventListener('change', atualizarAcordo);
+  });
+
+  function atualizarAcordo() {
+    const total = lerMoeda(campo('valor_acordo').value);
+    const entrada = lerMoeda(campo('valor_entrada').value);
+    const qtd = parseInt(campo('qtd_parcelas').value, 10) || 0;
+
+    if (!parcelaEditadaManualmente && total > 0 && qtd > 0 && total >= entrada) {
+      campo('valor_parcela').value = formatarMoeda(Math.round(((total - entrada) / qtd) * 100) / 100);
+    }
+
+    const resumo = document.getElementById('resumoAcordo');
+    if (!total || !qtd) { resumo.classList.remove('visible', 'alerta'); return; }
+
+    const parcela = lerMoeda(campo('valor_parcela').value);
+    const soma = entrada + parcela * qtd;
+    const diferenca = Math.round((soma - total) * 100) / 100;
+
+    resumo.innerHTML = `<strong>Resumo:</strong> entrada de R$ ${formatarMoeda(entrada)} em ${dataBR(campo('data_entrada').value)} `
+      + `+ ${qtd} parcela${qtd > 1 ? 's' : ''} de R$ ${formatarMoeda(parcela)} a partir de ${dataBR(campo('data_primeira_parcela').value)} `
+      + `= <strong>R$ ${formatarMoeda(soma)}</strong>`
+      + (Math.abs(diferenca) >= 0.01 ? `<br>⚠️ Diferença de R$ ${formatarMoeda(Math.abs(diferenca))} ${diferenca > 0 ? 'acima' : 'abaixo'} do valor total do acordo.` : '');
+    resumo.classList.add('visible');
+    resumo.classList.toggle('alerta', Math.abs(diferenca) >= 0.01);
+  }
+
+  // ---- Validação ----
+  function validar() {
+    form.querySelectorAll('.erro').forEach(el => el.classList.remove('erro'));
+    const erros = [];
+    const marcar = (nome, msg) => { const el = campo(nome); if (el) el.classList.add('erro'); erros.push(msg); };
+
+    if (!campo('codigo_inquilino').value.trim()) marcar('codigo_inquilino', 'Informe o código do inquilino.');
+
+    const total = lerMoeda(campo('valor_acordo').value);
+    const entrada = lerMoeda(campo('valor_entrada').value);
+    if (total <= 0) marcar('valor_acordo', 'Informe o valor total do acordo.');
+    if (entrada > total) marcar('valor_entrada', 'A entrada não pode ser maior que o valor total.');
+    if (entrada > 0 && !campo('data_entrada').value) marcar('data_entrada', 'Informe a data da entrada.');
+    if (!(parseInt(campo('qtd_parcelas').value, 10) > 0)) marcar('qtd_parcelas', 'Informe a quantidade de parcelas.');
+    if (!campo('data_primeira_parcela').value) marcar('data_primeira_parcela', 'Informe o vencimento da 1ª parcela.');
+
+    const solidario = form.querySelector('input[name="tem_solidario"]:checked')?.value;
+    if (!solidario) erros.push('Informe se há locatários solidários.');
+    if (solidario === 'Sim' && ![...form.querySelectorAll('input[name="codigo_solidario[]"]')].some(i => i.value.trim())) {
+      form.querySelector('input[name="codigo_solidario[]"]').classList.add('erro');
+      erros.push('Informe ao menos um código de solidário.');
+    }
+
+    const fiador = form.querySelector('input[name="tem_fiador"]:checked')?.value;
+    if (!fiador) erros.push('Informe se a garantia do contrato é fiador.');
+    if (fiador === 'Sim' && ![...form.querySelectorAll('input[name="codigo_fiador[]"]')].some(i => i.value.trim())) {
+      form.querySelector('input[name="codigo_fiador[]"]').classList.add('erro');
+      erros.push('Informe ao menos um código de fiador.');
+    }
+    return erros;
+  }
+
+  // ---- Envio ----
+  form.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const erros = validar();
+    if (erros.length) { alert(erros.join('\n')); return; }
+
+    const data = {};
+    new FormData(this).forEach((v, k) => {
+      if (k.endsWith('[]')) {
+        const key = k.slice(0, -2);
+        if (!data[key]) data[key] = [];
+        if (String(v).trim()) data[key].push(String(v).trim());
+      } else {
+        data[k] = typeof v === 'string' ? v.trim() : v;
+      }
+    });
+    if (data.tem_solidario !== 'Sim') data.codigo_solidario = [];
+    if (data.tem_fiador !== 'Sim') data.codigo_fiador = [];
+
+    const btn = document.getElementById('btnEnviar');
+    btn.disabled = true;
+    btn.textContent = 'Enviando…';
+    try {
+      const res = await fetch(WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'text/plain' },
+        body: JSON.stringify(data)
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status);
+      showToast('✓ Distrato enviado com sucesso! O documento chega no WhatsApp em instantes.');
+      limparForm(true);
+    } catch (err) {
+      showToast('Erro ao enviar o distrato. Tente novamente.', true);
+    } finally {
+      btn.disabled = false;
+      btn.textContent = 'Enviar Distrato';
+    }
+  });
+
+  function showToast(msg, erro = false) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.toggle('erro', erro);
+    t.style.display = 'block';
+    setTimeout(() => { t.style.display = 'none'; }, erro ? 5000 : 3500);
+  }
+
+  function limparForm(semConfirmar = false) {
+    if (!semConfirmar && !confirm('Deseja limpar todos os campos?')) return;
+    form.reset();
+    form.querySelectorAll('.erro').forEach(el => el.classList.remove('erro'));
+    document.querySelectorAll('.radio-label').forEach(l => l.classList.remove('selected'));
+    document.querySelectorAll('.dynamic-block').forEach(b => b.classList.remove('visible'));
+    ['listaSolidarios', 'listaFiadores'].forEach(id => {
+      const lista = document.getElementById(id);
+      while (lista.children.length > 1) lista.removeChild(lista.lastChild);
+    });
+    Object.keys(contadores).forEach(k => delete contadores[k]);
+    parcelaEditadaManualmente = false;
+    const resumo = document.getElementById('resumoAcordo');
+    resumo.classList.remove('visible', 'alerta');
+    resumo.innerHTML = '';
+  }
+</script>
+</body>
+</html>
