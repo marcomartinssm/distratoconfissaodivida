@@ -90,6 +90,11 @@
           <input type="text" name="codigo_inquilino" inputmode="numeric" placeholder="Código do inquilino no Imoview" />
           <span class="hint">Locador, imóvel, datas e prazo do contrato são buscados automaticamente no Imoview.</span>
         </div>
+        <div class="field">
+          <label>Número do Contrato</label>
+          <input type="text" name="codigo_contrato" inputmode="numeric" placeholder="Número do contrato no Imoview" />
+          <span class="hint">Obrigatório. É o número do contrato, não o do imóvel. Com ele o documento sai mesmo se o contrato já estiver rescindido.</span>
+        </div>
       </div>
 
       <!-- ACORDO DE DÉBITOS -->
@@ -301,6 +306,7 @@
     const marcar = (nome, msg) => { const el = campo(nome); if (el) el.classList.add('erro'); erros.push(msg); };
 
     if (!campo('codigo_inquilino').value.trim()) marcar('codigo_inquilino', 'Informe o código do inquilino.');
+    if (!campo('codigo_contrato').value.trim()) marcar('codigo_contrato', 'Informe o número do contrato.');
 
     const total = lerMoeda(campo('valor_acordo').value);
     const entrada = lerMoeda(campo('valor_entrada').value);
